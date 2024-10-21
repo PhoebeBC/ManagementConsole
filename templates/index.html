@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Console</title>
+    <style>
+        .content {
+            margin: 5px;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1 class="title">Event List</h1>
+    <div class="content">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Source</th>
+                    <th>Initiator Type</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Finished At</th>
+                </tr>
+            </thead>
+            <tbody id="eventTable">
+            </tbody>
+        </table>
+    </div>
+    <script>
+    // Function to fetch events from the server
+    function fetchEvents() {
+        fetch('/refresh-events')
+            .then(response => response.json())
+            .then(data => {
+                let tableBody = document.querySelector('#eventTable');
+                tableBody.innerHTML = '';
+                data.forEach(event => {
+                    let row = `<tr>
+                        <td>${event.id}</td>
+                        <td>${event.source}</td>
+                        <td>${event.initiator_type}</td>
+                        <td>${event.status}</td>
+                        <td>${event.created_at}</td>
+                        <td>${event.finished_at || 'N/A'}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Error fetching events:', error));
+    }
+        // Polling refresh every 0.1 seconds
+        setInterval(fetchEvents, 100);
+        fetchEvents();
+    </script>
+</body>
+</html>
